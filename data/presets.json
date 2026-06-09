@@ -1,0 +1,32 @@
+{
+    "presets": {
+        "rechargechakrabloodlines": {
+            "start_mod": "ctrl",
+            "start_key": "f1",
+            "stop_mod": "ctrl",
+            "stop_key": "f2",
+            "action_key": "c",
+            "mod_ctrl": false,
+            "mod_alt": false,
+            "mod_shift": false,
+            "mode": "hold_continu",
+            "duration": 5,
+            "spam_times": 1,
+            "spam_delay": 50
+        }
+    },
+    "current": {
+        "start_mod": "ctrl",
+        "start_key": "f1",
+        "stop_mod": "ctrl",
+        "stop_key": "f2",
+        "action_key": "c",
+        "mod_ctrl": false,
+        "mod_alt": false,
+        "mod_shift": false,
+        "mode": "hold_continu",
+        "duration": 5,
+        "spam_times": 1,
+        "spam_delay": 50
+    }
+}
