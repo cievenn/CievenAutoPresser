@@ -13,6 +13,42 @@
             "duration": 5,
             "spam_times": 1,
             "spam_delay": 50
+        },
+        "dragoneaubloodlinesfarm": {
+            "start_mod": "ctrl",
+            "start_key": "f1",
+            "stop_mod": "ctrl",
+            "stop_key": "f2",
+            "action_mode": "sequence",
+            "action_key": "c",
+            "mod_ctrl": false,
+            "mod_alt": false,
+            "mod_shift": false,
+            "mode": "hold_continu",
+            "duration": 5,
+            "spam_times": 1,
+            "spam_delay": 50,
+            "sequence_list": [
+                {
+                    "type": "action",
+                    "val": "("
+                },
+                {
+                    "type": "delay",
+                    "val": 1.0
+                },
+                {
+                    "type": "action",
+                    "val": "clic_gauche"
+                },
+                {
+                    "type": "delay",
+                    "val": 9.0
+                }
+            ],
+            "seq_mode": "seq_infini",
+            "seq_duration": 60,
+            "seq_loops": 10
         }
     },
     "current": {
@@ -20,6 +56,7 @@
         "start_key": "f1",
         "stop_mod": "ctrl",
         "stop_key": "f2",
+        "action_mode": "simple",
         "action_key": "c",
         "mod_ctrl": false,
         "mod_alt": false,
@@ -27,6 +64,27 @@
         "mode": "hold_continu",
         "duration": 5,
         "spam_times": 1,
-        "spam_delay": 50
+        "spam_delay": 50,
+        "sequence_list": [
+            {
+                "type": "action",
+                "val": "("
+            },
+            {
+                "type": "delay",
+                "val": 1.0
+            },
+            {
+                "type": "action",
+                "val": "clic_gauche"
+            },
+            {
+                "type": "delay",
+                "val": 9.0
+            }
+        ],
+        "seq_mode": "seq_infini",
+        "seq_duration": 60,
+        "seq_loops": 10
     }
 }
