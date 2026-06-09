@@ -65,24 +65,7 @@
         "duration": 5,
         "spam_times": 1,
         "spam_delay": 50,
-        "sequence_list": [
-            {
-                "type": "action",
-                "val": "("
-            },
-            {
-                "type": "delay",
-                "val": 1.0
-            },
-            {
-                "type": "action",
-                "val": "clic_gauche"
-            },
-            {
-                "type": "delay",
-                "val": 9.0
-            }
-        ],
+        "sequence_list": [],
         "seq_mode": "seq_infini",
         "seq_duration": 60,
         "seq_loops": 10

@@ -1,9 +1,16 @@
 import json
 import os
+import sys  # <-- N'oublie pas d'importer sys
 
 class DatabaseManager:
     def __init__(self):
-        self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # Si le programme est compilé en .exe
+        if getattr(sys, 'frozen', False):
+            self.base_dir = os.path.dirname(sys.executable)
+        # Si le programme tourne en script Python normal (.py)
+        else:
+            self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            
         self.data_dir = os.path.join(self.base_dir, "data")
         self.db_path = os.path.join(self.data_dir, "presets.json")
         

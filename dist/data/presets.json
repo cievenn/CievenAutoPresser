@@ -1,0 +1,22 @@
+{
+    "presets": {},
+    "current": {
+        "start_mod": "ctrl",
+        "start_key": "f1",
+        "stop_mod": "ctrl",
+        "stop_key": "f2",
+        "action_mode": "simple",
+        "action_key": "space",
+        "mod_ctrl": false,
+        "mod_alt": false,
+        "mod_shift": false,
+        "mode": "hold_continu",
+        "duration": 5,
+        "spam_times": 1,
+        "spam_delay": 50,
+        "sequence_list": [],
+        "seq_mode": "seq_infini",
+        "seq_duration": 60,
+        "seq_loops": 10
+    }
+}

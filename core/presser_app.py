@@ -462,6 +462,13 @@ class AutoPresserUltimate:
                         
                         if step["type"] == "action":
                             val = step["val"]
+                            try:  # <-- AJOUTE CECI
+                                if val in mouse_map:
+                                    mouse.click(button=mouse_map[val])
+                                else:
+                                    keyboard.send(val)
+                            except Exception: # <-- ET CECI
+                                pass
                             if val in mouse_map:
                                 mouse.click(button=mouse_map[val])
                             else:
