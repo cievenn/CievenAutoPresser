@@ -40,6 +40,42 @@ class AutoPresserUltimate:
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
 
+    # -----------------------------------------------------
+    # OUTILS DE SÉCURITÉ (GETTERS & SETTERS ANTI-CRASH)
+    # -----------------------------------------------------
+    def safe_int_get(self, int_var, default=0):
+        try:
+            return int_var.get()
+        except tk.TclError:
+            return default
+
+    def safe_int_set(self, int_var, value, default=0):
+        try:
+            int_var.set(int(value))
+        except (ValueError, TypeError, tk.TclError):
+            int_var.set(default)
+
+    def set_ui_state(self, state):
+        """ Gèle ou dégèle l'interface pour empêcher les modifications en cours d'exécution """
+        widgets = [
+            self.preset_entry, self.btn_save, self.btn_delete, self.presets_listbox,
+            self.cb_start_mod, self.cb_start_key, self.cb_stop_mod, self.cb_stop_key,
+            self.cb_action_key, self.chk_ctrl, self.chk_alt, self.chk_shift,
+            self.rb_continu, self.rb_duree, self.rb_spam,
+            self.sb_duration, self.sb_spam_times, self.sb_spam_delay
+        ]
+        for w in widgets:
+            try:
+                if state == "normal" and isinstance(w, ttk.Combobox):
+                    w.config(state="readonly")
+                else:
+                    w.config(state=state)
+            except tk.TclError:
+                pass
+
+    # -----------------------------------------------------
+    # CRÉATION DE L'INTERFACE
+    # -----------------------------------------------------
     def create_widgets(self):
         self.left_frame = tk.Frame(self.root, padx=10, pady=10)
         self.left_frame.pack(side="left", fill="both", expand=True)
@@ -51,14 +87,19 @@ class AutoPresserUltimate:
         tk.Label(self.right_frame, text="💾 PRESETS", font=("Segoe UI", 11, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(5, 5))
         tk.Label(self.right_frame, text="Nom du preset :", bg="#f0f0f0", font=("Segoe UI", 9)).pack(anchor="w")
         self.preset_name_var = tk.StringVar()
-        ttk.Entry(self.right_frame, textvariable=self.preset_name_var, width=22).pack(anchor="w", pady=2)
-        ttk.Button(self.right_frame, text="Sauvegarder", command=self.save_preset).pack(anchor="w", fill="x", pady=(0, 15))
+        self.preset_entry = ttk.Entry(self.right_frame, textvariable=self.preset_name_var, width=22)
+        self.preset_entry.pack(anchor="w", pady=2)
+        
+        self.btn_save = ttk.Button(self.right_frame, text="Sauvegarder", command=self.save_preset)
+        self.btn_save.pack(anchor="w", fill="x", pady=(0, 15))
 
         tk.Label(self.right_frame, text="Vos Presets :", bg="#f0f0f0", font=("Segoe UI", 9, "italic")).pack(anchor="w")
         self.presets_listbox = tk.Listbox(self.right_frame, width=22, height=14, font=("Segoe UI", 10))
         self.presets_listbox.pack(anchor="w", fill="both", expand=True)
         self.presets_listbox.bind("<<ListboxSelect>>", self.on_preset_selected)
-        ttk.Button(self.right_frame, text="❌ Supprimer", command=self.delete_preset).pack(anchor="w", fill="x", pady=(5, 0))
+        
+        self.btn_delete = ttk.Button(self.right_frame, text="❌ Supprimer", command=self.delete_preset)
+        self.btn_delete.pack(anchor="w", fill="x", pady=(5, 0))
 
         # CONTROLES (Gauche)
         frame_hotkeys = tk.LabelFrame(self.left_frame, text=" 1. Raccourcis globaux ", font=("Segoe UI", 10, "bold"), padx=15, pady=10)
@@ -99,29 +140,42 @@ class AutoPresserUltimate:
         self.mod_ctrl_var, self.mod_alt_var, self.mod_shift_var = tk.BooleanVar(), tk.BooleanVar(), tk.BooleanVar()
         frame_mods = tk.Frame(frame_action)
         frame_mods.grid(row=1, column=1, sticky="w", pady=5)
-        ttk.Checkbutton(frame_mods, text="Ctrl", variable=self.mod_ctrl_var).pack(side="left", padx=2)
-        ttk.Checkbutton(frame_mods, text="Alt", variable=self.mod_alt_var).pack(side="left", padx=2)
-        ttk.Checkbutton(frame_mods, text="Shift", variable=self.mod_shift_var).pack(side="left", padx=2)
+        
+        self.chk_ctrl = ttk.Checkbutton(frame_mods, text="Ctrl", variable=self.mod_ctrl_var)
+        self.chk_ctrl.pack(side="left", padx=2)
+        self.chk_alt = ttk.Checkbutton(frame_mods, text="Alt", variable=self.mod_alt_var)
+        self.chk_alt.pack(side="left", padx=2)
+        self.chk_shift = ttk.Checkbutton(frame_mods, text="Shift", variable=self.mod_shift_var)
+        self.chk_shift.pack(side="left", padx=2)
 
-        # GESTION 
+        # GESTION
         frame_options = tk.LabelFrame(self.left_frame, text=" 3. Gestion ", font=("Segoe UI", 10, "bold"), padx=15, pady=10)
         frame_options.pack(fill="x", pady=5)
         
         self.mode_var = tk.StringVar(value="hold_continu")
         
-        ttk.Radiobutton(frame_options, text="En continu (Presse tout le temps)", variable=self.mode_var, value="hold_continu").grid(row=0, column=0, sticky="w", columnspan=5, pady=5)
+        self.rb_continu = ttk.Radiobutton(frame_options, text="En continu (Presse tout le temps)", variable=self.mode_var, value="hold_continu")
+        self.rb_continu.grid(row=0, column=0, sticky="w", columnspan=5, pady=5)
         
-        ttk.Radiobutton(frame_options, text="Relâcher après :", variable=self.mode_var, value="hold_duree").grid(row=1, column=0, sticky="w", pady=5)
+        self.rb_duree = ttk.Radiobutton(frame_options, text="Relâcher après :", variable=self.mode_var, value="hold_duree")
+        self.rb_duree.grid(row=1, column=0, sticky="w", pady=5)
+        
         self.duration_var = tk.IntVar(value=5)
-        ttk.Spinbox(frame_options, from_=1, to=3600, textvariable=self.duration_var, width=5).grid(row=1, column=1, sticky="w", padx=2)
+        self.sb_duration = ttk.Spinbox(frame_options, from_=1, to=3600, textvariable=self.duration_var, width=5)
+        self.sb_duration.grid(row=1, column=1, sticky="w", padx=2)
         tk.Label(frame_options, text="secondes").grid(row=1, column=2, sticky="w", columnspan=3)
 
-        ttk.Radiobutton(frame_options, text="Spam :", variable=self.mode_var, value="spam").grid(row=2, column=0, sticky="w", pady=5)
+        self.rb_spam = ttk.Radiobutton(frame_options, text="Spam :", variable=self.mode_var, value="spam")
+        self.rb_spam.grid(row=2, column=0, sticky="w", pady=5)
+        
         self.spam_times_var = tk.IntVar(value=1)
-        ttk.Spinbox(frame_options, from_=1, to=999, textvariable=self.spam_times_var, width=4).grid(row=2, column=1, sticky="w", padx=2)
+        self.sb_spam_times = ttk.Spinbox(frame_options, from_=1, to=999, textvariable=self.spam_times_var, width=4)
+        self.sb_spam_times.grid(row=2, column=1, sticky="w", padx=2)
         tk.Label(frame_options, text="fois par").grid(row=2, column=2, sticky="w", padx=2)
+        
         self.spam_delay_var = tk.IntVar(value=50)
-        ttk.Spinbox(frame_options, from_=1, to=10000, textvariable=self.spam_delay_var, width=5).grid(row=2, column=3, sticky="w", padx=2)
+        self.sb_spam_delay = ttk.Spinbox(frame_options, from_=1, to=10000, textvariable=self.spam_delay_var, width=5)
+        self.sb_spam_delay.grid(row=2, column=3, sticky="w", padx=2)
         tk.Label(frame_options, text="ms").grid(row=2, column=4, sticky="w")
 
         # Statut
@@ -171,7 +225,6 @@ class AutoPresserUltimate:
         start_hk = f"{self.start_mod_var.get()}+{self.start_key_var.get()}" if self.start_mod_var.get() else self.start_key_var.get()
         stop_hk = f"{self.stop_mod_var.get()}+{self.stop_key_var.get()}" if self.stop_mod_var.get() else self.stop_key_var.get()
 
-        # CORRECTION 2 : Vérification du conflit Start/Stop avec mise à jour UI
         if start_hk == stop_hk: 
             self.status_label.config(text="ERREUR : Raccourcis identiques", fg="#c0392b")
             return
@@ -197,25 +250,28 @@ class AutoPresserUltimate:
     def start_holding(self):
         if not self.stop_event.is_set(): return 
         
-        # CORRECTION 3 : Sécurité Cible Vide (Évite le ValueError Silencieux)
         target = self.action_key_var.get().strip().lower()
         if not target or target not in KEYS_LIST:
             self.root.after(0, lambda: self.status_label.config(text="ERREUR : Cible invalide !", fg="#c0392b"))
             return
 
         self.stop_event.clear()
+        
+        # VERROUILLAGE DE L'UI : Empêche toute interférence utilisateur pendant l'exécution
+        self.root.after(0, lambda: self.set_ui_state("disabled"))
         self.root.after(0, lambda: self.status_label.config(text="🔥 ACTION EN COURS...", fg="#e74c3c"))
         
         mods = [m for m, var in zip(["ctrl", "alt", "shift"], [self.mod_ctrl_var, self.mod_alt_var, self.mod_shift_var]) if var.get()]
         
+        # Lancement sécurisé via les Safe Getters (Anti Spinbox-vide Crash)
         threading.Thread(
             target=self.hold_process, 
             args=(
                 target, mods, 
                 self.mode_var.get(), 
-                self.duration_var.get(), 
-                self.spam_times_var.get(), 
-                self.spam_delay_var.get()
+                self.safe_int_get(self.duration_var, 5), 
+                self.safe_int_get(self.spam_times_var, 1), 
+                self.safe_int_get(self.spam_delay_var, 50)
             ), 
             daemon=True
         ).start()
@@ -230,9 +286,13 @@ class AutoPresserUltimate:
         def safe_ui_update():
             try:
                 self.status_label.config(text=f"ARRÊTÉ / PRÊT ({self.current_start_hotkey.upper()})", fg="#2980b9")
+                self.set_ui_state("normal") # DÉVERROUILLAGE DE L'UI
             except tk.TclError:
                 pass 
 
+        # ANTI CTRL+A (Laisse 300ms à l'humain pour lever ses doigts des touches de lancement)
+        time.sleep(0.3)
+        
         start_time = time.time()
         
         try:
@@ -240,20 +300,14 @@ class AutoPresserUltimate:
 
             if mode in ["hold_continu", "hold_duree"]:
                 if is_mouse:
-                    # Pour la souris, presser 1 fois maintient vraiment le clic sous Windows
                     mouse.press(button=mouse_map[target])
                     if mode == "hold_duree": self.stop_event.wait(duration)
                     else: self.stop_event.wait()
                 else:
-                    # CORRECTION DU MAINTIEN CONTINU :
-                    # Windows n'auto-répète pas les touches virtuelles. Pour que l'ordinateur 
-                    # comprenne que c'est "maintenu", il FAUT lui renvoyer "KeyDown" en boucle rapide.
                     while not self.stop_event.is_set():
                         if mode == "hold_duree" and (time.time() - start_time >= duration):
                             break
                         keyboard.press(target)
-                        # Le .wait(0.03) met en pause 30ms (vitesse d'une frappe) mais
-                        # s'interrompt IMMÉDIATEMENT si tu appuies sur le bouton Stop
                         self.stop_event.wait(0.03)
 
             elif mode == "spam":
@@ -262,7 +316,7 @@ class AutoPresserUltimate:
                     for _ in range(spam_times):
                         if self.stop_event.is_set(): break
                         if is_mouse: mouse.click(button=mouse_map[target])
-                        else: keyboard.send(target) # Press & Release (vrai clic)
+                        else: keyboard.send(target) 
                         time.sleep(0.01) 
                     self.stop_event.wait(delay_sec) 
 
@@ -285,7 +339,6 @@ class AutoPresserUltimate:
     # SÉCURITÉS & SAUVEGARDE
     # -----------------------------------------------------
     def force_release_all(self):
-        """ SÉCURITÉ ANTI-GHOST KEY : Force le relâchement de tout à la fermeture """
         try:
             for k in ["ctrl", "alt", "shift"]: keyboard.release(k)
             target = self.action_key_var.get().strip().lower()
@@ -298,16 +351,10 @@ class AutoPresserUltimate:
             pass
 
     def on_close(self):
-        # 1. Arrête immédiatement la boucle
         self.stop_holding()
-        
-        # 2. Laisse 100 millisecondes au thread pour finir son bloc 'finally' naturellement
         time.sleep(0.1) 
-        
-        # 3. CORRECTION 1 (GHOST KEY) : Sécurité brute, on lève les touches manuellement !
         self.force_release_all() 
         
-        # 4. Sauvegarde et fermeture
         self.database["current"] = self.get_current_ui_state()
         self.save_database_to_file()
         self.root.destroy()
@@ -337,9 +384,10 @@ class AutoPresserUltimate:
             elif old_mode in ["duree", "hold_duree"]: self.mode_var.set("hold_duree")
             else: self.mode_var.set("spam")
                 
-            self.duration_var.set(preset.get("duration", 5))
-            self.spam_times_var.set(preset.get("spam_times", 1))
-            self.spam_delay_var.set(preset.get("spam_delay", 50))
+            # SÉCURITÉ : Setters sécurisés anti-corruption JSON
+            self.safe_int_set(self.duration_var, preset.get("duration", 5), 5)
+            self.safe_int_set(self.spam_times_var, preset.get("spam_times", 1), 1)
+            self.safe_int_set(self.spam_delay_var, preset.get("spam_delay", 50), 50)
 
     def get_current_ui_state(self):
         return {
@@ -347,8 +395,10 @@ class AutoPresserUltimate:
             "stop_mod": self.stop_mod_var.get(), "stop_key": self.stop_key_var.get(),
             "action_key": self.action_key_var.get(), "mod_ctrl": self.mod_ctrl_var.get(),
             "mod_alt": self.mod_alt_var.get(), "mod_shift": self.mod_shift_var.get(),
-            "mode": self.mode_var.get(), "duration": self.duration_var.get(),
-            "spam_times": self.spam_times_var.get(), "spam_delay": self.spam_delay_var.get()
+            "mode": self.mode_var.get(), 
+            "duration": self.safe_int_get(self.duration_var, 5),
+            "spam_times": self.safe_int_get(self.spam_times_var, 1), 
+            "spam_delay": self.safe_int_get(self.spam_delay_var, 50)
         }
 
     def save_preset(self):
